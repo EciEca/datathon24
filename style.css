@@ -1,1 +1,26 @@
+/*changing slider color*/
+.rc-slider-track {
+    background-color: #A65C6A;
+  }
+  
+  .rc-slider-dot-active {  
+    border-color: #A65C6A;
+    border: solid 2px #A65C6A;
+  }
 
+.rc-slider-handle,
+.rc-slider-handle:active,
+.rc-slider-handle:focus {
+    background-color: #ebc3be; /* Change to your desired color */
+    border-color: #A65C6A; /* Change to your desired color */
+}
+
+/*changing dropdown menu color */
+
+.custom-dropdown .Select-control {
+    width: 75%;
+}
+
+.custom-dropdown .Select-arrow-zone {
+    background-color: #e7cfb7;
+}
