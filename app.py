@@ -6,11 +6,9 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.figure_factory as ff
 import dash_bootstrap_components as dbc
-
 import plotly.graph_objs as go
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
-
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
@@ -24,29 +22,16 @@ app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY,'/assets/style.css'])
 
 wine_df = pd.read_csv("https://raw.githubusercontent.com/EciEca/datathon24/main/winequality-red.csv")
 
-
 target_column = 'quality'
-# Function to plot feature importance
 def plot_feature_importance(data, target_column, random_state=1, max_depth=12):
-    # Instantiate RandomForestRegressor
     model = RandomForestRegressor(random_state=random_state, max_depth=max_depth)
-    
-    # Separate features and target
     x = data.drop([target_column], axis=1)
-    
-    # One-hot encode categorical variables if needed
     data_encoded = pd.get_dummies(data)
-    
-    # Fit the model
     model.fit(x, data_encoded[target_column])
-    
-    # Prepare data for plot
     features = data_encoded.columns
     importances = model.feature_importances_
     indices = np.argsort(importances)[:]
-    
-    # Create a bar chart using plotly.graph_objects
-    fig = go.Figure(go.Bar(
+        fig = go.Figure(go.Bar(
         x=importances[indices],
         y=[features[i] for i in indices],
         orientation='h',
@@ -57,21 +42,21 @@ def plot_feature_importance(data, target_column, random_state=1, max_depth=12):
         title='Component Relative Weight on the Quality of Wine',
         xaxis_title='Relative Weights',
         yaxis_title='Components',
-        plot_bgcolor='#ecdbc7',  # Set background color of the plot area
-        paper_bgcolor='#ecdbc7'  # Set background color of the entire graph
+        plot_bgcolor='#ecdbc7',  
+        paper_bgcolor='#ecdbc7'
     )
-
     return fig
 
-# Define layout of the app
+
+
 app.layout = dbc.Container(
     fluid=True,
-    style={'backgroundColor': '#ecdbc7'}, # Set background color with transparency
+    style={'backgroundColor': '#ecdbc7'},
     children=[
         dbc.Row([
             dbc.Col(
                 width=3,
-                style={'padding': '8px'},  # Add padding to the column
+                style={'padding': '8px'},  
                 children=[
                     html.H2("Welcome to the Vineyard Ventures Dashboard", style={'margin-bottom': '20px', 'font-family': 'Raleway', 'color': '#6b0f1a'}),
                     html.Hr(),
@@ -85,7 +70,6 @@ app.layout = dbc.Container(
                         style={'margin-bottom': '20px','margin-left': '3px'}
                     ),
                     html.Hr(),
-                    # Add your sidebar components here if needed
                     html.H6("Select an Attribute to Start Exploring:", style={'font-family': 'Raleway','font-size': '24px','margin-bottom': '20px','margin-left': '3px', 'color': '#6b0f1a'}),
                     dcc.Dropdown(
                         id='variable-dropdown',
@@ -94,24 +78,19 @@ app.layout = dbc.Container(
                         clearable = False,
                         style={'width': '100%', 'margin-bottom': '20px','margin-left': '3px', 'font-size': '16px','background-color': '#e7cfb7'},
                     ),
-                    html.Div(id='description-div',style={'margin': '0 20px', 'font-size': '16px'})  # Empty div to display description                 
+                    html.Div(id='description-div',style={'margin': '0 20px', 'font-size': '16px'})       
                 ]
             ),
             dbc.Col(
                 width=5,
                 children=[
-                    # Dropdown menu for selecting variable
-                    # Graph component to display the Distplot
                     dcc.Graph(id='distplot-graph', style={'margin-top': '10px'}),
                     html.Div(style={'height': '20px'}),
-
-
-                    # Graph component to display the Violin Plot
                     dcc.Graph(id='violinplot-graph'),
                 ]
             ),
             dbc.Col(
-                width=4,  # Adjusted width of existing column
+                width=4,  
                 style={'padding': '8px'},
                 children=[
                     html.H3("Wine Quality Predictor",style={'font-family': 'Raleway', 'font-size': '34px','color': '#6b0f1a'}),
@@ -156,15 +135,15 @@ app.layout = dbc.Container(
                             html.Div(id='output-container', style={'text-align': 'center'}),      
                         ]),
                     ]),
-                    dcc.Graph(id='feature-importance-graph')  # Graph to display feature importance
+                    dcc.Graph(id='feature-importance-graph') 
                 ]
             ),
         ]),
     ]
 )
-                            # html.Label("name"),
-                            # dcc.Slider(id="name", min=min, max=max, value=10, marks={min: 'min', max: 'max'},
-                            #            tooltip={"placement": "top", "always_visible": False}, style={'width': '75%'}),
+
+
+
 bin_sizes = {
     'fixed acidity': 0.2,
     'citric acid': 0.02,
@@ -179,7 +158,8 @@ bin_sizes = {
     'alcohol': 0.1
 }
 
-# Define callback to update the Distplot based on variable selection
+
+
 @app.callback(
     Output('distplot-graph', 'figure'),
     [Input('variable-dropdown', 'value')]
@@ -188,7 +168,6 @@ def update_distplot(selected_variable):
     colors = ['#1c4e80']
     fig = ff.create_distplot([wine_df[selected_variable]], [selected_variable], bin_size=bin_sizes[selected_variable], colors=colors)
 
-    # Set showlegend to False for each trace
     for trace in fig['data']:
         trace.showlegend = False
 
@@ -197,12 +176,13 @@ def update_distplot(selected_variable):
         xaxis_title=selected_variable,
         yaxis_title="Density",
         font=dict(size=12),
-        plot_bgcolor='#e7cfb7',  # Set background color of the plot area
-        paper_bgcolor='#e7cfb7'  # Set background color of the entire graph
+        plot_bgcolor='#e7cfb7', 
+        paper_bgcolor='#e7cfb7'  
     )
     return fig
 
-# Define callback to update the Violin Plot based on variable selection
+
+
 @app.callback(
     Output('violinplot-graph', 'figure'),
     [Input('variable-dropdown', 'value')]
@@ -222,7 +202,6 @@ def update_violinplot(selected_variable):
                     color_discrete_map=color_discrete_map,
                     category_orders={"quality": sorted(wine_df['quality'].unique())})
 
-    # Remove legend from all traces
     for trace in fig.data:
         trace.update(showlegend=False)
 
@@ -232,13 +211,13 @@ def update_violinplot(selected_variable):
         yaxis_title=selected_variable,
         legend_title="Quality",
         font=dict(size=12),
-        plot_bgcolor='#e7cfb7',  # Set background color of the plot area
-        paper_bgcolor='#e7cfb7'  # Set background color of the entire graph
+        plot_bgcolor='#e7cfb7', 
+        paper_bgcolor='#e7cfb7' 
     )
-
     return fig
 
-# Callback to update description based on dropdown value
+
+
 @app.callback(
     Output('description-div', 'children'),
     [Input('variable-dropdown', 'value')]
@@ -268,7 +247,8 @@ def update_graph(dummy_input):
     fig = plot_feature_importance(wine_df, target_column)
     return fig
 
-# model for making predictions
+
+
 @app.callback(
     Output('output-container', 'children'),
     [Input('fixed acidity', 'value'),
@@ -299,33 +279,32 @@ def evaluate_wine_quality(fixed_acidity, citric_acid, chlorides, total_sulfur_di
         'alcohol': [alcohol]
     }) 
 
-    wine = pd.read_csv("https://raw.githubusercontent.com/EciEca/datathon24/main/winequality-red.csv")
 
-    bins = (2, 5, 8)
-    group_names = ['bad', 'good']
-    wine['quality'] = pd.cut(wine['quality'], bins=bins, labels=group_names)
-    label_quality = LabelEncoder()
-    wine['quality'] = label_quality.fit_transform(wine['quality'])
-    X = wine.drop('quality', axis=1)
-    y = wine['quality']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
-    rfc = RandomForestClassifier(n_estimators=200)
-    rfc.fit(X_train, y_train)
+                              
+wine = pd.read_csv("https://raw.githubusercontent.com/EciEca/datathon24/main/winequality-red.csv")
+bins = (2, 5, 8)
+group_names = ['bad', 'good']
+wine['quality'] = pd.cut(wine['quality'], bins=bins, labels=group_names)
+label_quality = LabelEncoder()
+wine['quality'] = label_quality.fit_transform(wine['quality'])
+X = wine.drop('quality', axis=1)
+y = wine['quality']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+rfc = RandomForestClassifier(n_estimators=200)
+rfc.fit(X_train, y_train)
 
-    input_data = sc.transform(input_data)
-    prediction = rfc.predict(input_data)[0]
-    # print(prediction)
+input_data = sc.transform(input_data)
+prediction = rfc.predict(input_data)[0]
 
-    if prediction == 1: 
-        return html.Div("good wine", style={'color': '#6a994e', 'text-align': 'center', 'padding': '15px', 'font-size': '20px', 'border': '1px solid #6a994e', 'display': 'inline-block', 'width': 'fit-content', 'margin': 'auto'})
-    else: 
-        return html.Div("poor wine", style={'color': '#b9375e', 'text-align': 'center', 'padding': '15px', 'font-size': '20px', 'border': '2px solid #b9375e', 'display': 'inline-block', 'width': 'fit-content', 'margin': 'auto'})
+if prediction == 1: 
+    return html.Div("good wine", style={'color': '#6a994e', 'text-align': 'center', 'padding': '15px', 'font-size': '20px', 'border': '1px solid #6a994e', 'display': 'inline-block', 'width': 'fit-content', 'margin': 'auto'})
+else: 
+    return html.Div("poor wine", style={'color': '#b9375e', 'text-align': 'center', 'padding': '15px', 'font-size': '20px', 'border': '2px solid #b9375e', 'display': 'inline-block', 'width': 'fit-content', 'margin': 'auto'})
 
 
-# Run the app
+
 if __name__ == '__main__':
     app.run_server(debug=True, port=2345)
-
