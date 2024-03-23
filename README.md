@@ -1,3 +1,6 @@
+## Devpost
+https://devpost.com/software/vineyard-ventures
+
 ## Inspiration
 Driven by a shared passion for making data exploration more interactive and accessible to all, we were inspired to create a tool that reflected the intricacies and nuances of red wine. The project aims to bridge the gap between traditional wine tasting methods and modern data analysis techniques. By leveraging machine learning and interactive visualization, the dashboard provides a user-friendly platform for both experts and novices to delve deeper into the complexities of red wine characteristics. Ultimately, the project aspires to enhance wine appreciation, empower producers, and enrich the overall wine experience for consumers.
 
